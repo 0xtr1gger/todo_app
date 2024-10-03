@@ -1,0 +1,105 @@
+{% extends 'login.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block auth_form %}
+<h1 class="auth-title">Register</h1>
+
+
+<form method="POST" action="/register">
+    {{ form.hidden_tag() }}
+
+    {{ form.username(placeholder="Username") }}
+    {% for error in form.username.errors %}
+        <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+    {% endfor %}
+
+    {{ form.email(placeholder="Email address") }}
+    {% for error in form.email.errors %}
+        <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+    {% endfor %}
+
+    {{ form.password(placeholder="Password") }}
+    {% for error in form.password.errors %}
+        <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+    {% endfor %}
+
+    {{ form.repeat_password(placeholder="Repeat password") }}
+
+    <input type="submit" value="Register">
+
+</form>
+
+<p>Already have an account? <a href="/login">Log in here</a></p>
+
+{% endblock %}
+<!--
+{% block script %}
+<script>
+
+    async function get_csrf_token() {
+        const response = await fetch('http://localhost:5001/api/auth/csrf');
+        const data = await response.json();
+        return data.token;
+    }
+
+    get_csrf_token().then(csrf_token => {
+        document.getElementById('csrt_token').value = csrf_token;
+    })
+
+    async function send_register_form(event) {
+			
+        event.preventDefault();
+
+        const user_username = document.getElementById('register-username').value;
+        const user_email = document.getElementById('register-email').value;
+        const user_password = document.getElementById('register-password').value;
+        const user_repeat_password = document.getElementById('register-repeat-password').value;
+        
+        console.log(user_username);
+        console.log(user_email);
+        console.log(user_password);
+        console.log(user_repeat_password);
+
+        const register_data = {
+            username: user_username,
+            email: user_email,
+            password: user_password,
+            repeat_password: user_repeat_password
+        };
+
+        console.log(register_data);
+
+        try {
+            const response = await fetch('http://localhost:5001/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(register_data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                //const message = JSON.stringify(result.message, null, 2);
+                //document.getElementById('messages').innerText = message;
+                document.getElementById('messages').innerText = 'Registration successful!'
+            } else {;
+                
+                error_messages = [];
+                for (const [field, messages] of Object.entries(result.errors)) {
+                    messages.forEach(msg => {
+                        error_messages.push(`${msg}`);
+                    });
+                }
+                document.getElementById('messages').innerText = 'Registration failed:\n' + error_messages.join(', ');
+            }
+
+        } catch (error) {
+            console.error('Error during fetch:', error);
+        }
+    }
+
+</script>
+{% endblock %}-->

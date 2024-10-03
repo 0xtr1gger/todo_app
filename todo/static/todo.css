@@ -1,0 +1,141 @@
+:root {
+    --gray-blue: #84b4bb;
+    --aqua-blue: #3995A3;
+    --turquoise: #5e9c95;
+    --dark-turquoise: #5d9990;
+
+    --dark: #000000;
+    --indigo: #2c2a3f;
+    --blue: #6b7fb6;
+    --light-purple: #818FB4;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: 30px;
+    font-weight: 400;
+}
+
+body {
+    height: 100dvh;
+    width: 100%;
+    font-family: sans-serif;
+    font-weight: 400;
+    color: white;
+    overflow: hidden;
+}
+
+.container {
+
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+    grid-template-rows: 1fr;
+    
+    height: 100%;
+    width: 100%;
+
+
+}
+
+.add-task-container {
+
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+
+
+    .header {
+        height: 100px;
+        font-size: 25px;
+        background-color: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image {
+        height: 100%;
+        background-color: aliceblue;
+    }
+
+    .add-task-form-container {
+        flex: 1fr;
+        height: 100%;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+
+    }
+}
+
+
+.add-task-form-container {
+
+    input {
+        background-color: var(--dark);
+        color: white;
+        font-size: 18px;
+
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+    }
+}
+
+
+#to-do-submit {
+    background-color: var(--indigo);
+    transition: all 0.5s ease;
+
+    &:hover {
+        background-color: var(--blue);
+        transition: all 0.5s ease;
+    }
+}
+
+
+
+.tasks {
+    background-color: var(--dark);
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 30px 25px;
+
+    border-left: 2px solid var(--blue);
+}
+
+.to-do-list {
+    margin-top: 10px;
+    padding: 10px 0px;
+
+    ul {
+        list-style-type: "♢  ";
+        list-style-position: inside;
+    }
+
+    ul li {
+        background-color: var(--blue);
+        height: 20px;
+        padding: 10px;
+        margin: 15px 0px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.5 ease;
+    }
+
+    ul li:hover {
+        background-color: var(--light-purple);
+        transition: all 0.5s ease;
+    }
+    
+}

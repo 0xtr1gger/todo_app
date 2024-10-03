@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<!--
+color palettes:
+
+- yellow-blue
+	https://huemint.com/website-1/#palette=14172a-ffc42a-6d92b5
+-->
+
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width" initial-scale="1.0" shrink-to-fit="no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	<!--<link ref="stylesheet" type="text/css" href="../static/base.css">-->
+	<link ref="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+
+		body {
+			background-color: rgb(45, 54, 68);
+			color: white;
+			font-family: sans-serif;
+			overflow-x: hidden;
+			overflow-y: scroll;
+
+			height: 100dvh;
+		}
+
+		.navbar {
+			display: flex;
+			justify-content: space-evenly;
+			align-items: center;
+			background-color: #3a3a3a;
+
+			height: 50px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+
+			a {
+				color: white;
+				text-decoration: none;
+				font-size: 20px;
+				font-weight: 400;
+				cursor: pointer;
+				transition: color 0.3s ease;
+			}
+		}
+
+		a:hover {
+			color: #ff4d4d;
+			transition: color 0.3s ease;
+		}
+
+		.body-container {
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+
+			align-items: center;
+
+			height: 100%;
+			background-color: #202336;
+
+			padding: 50px 30px;
+
+			background-image: url('https://picsum.photos/1200');
+			background-size: cover;
+			background-repeat: no-repeat;
+		}
+
+
+		.container {
+			width: 90%;
+			max-width: 600px;
+			background-color: #2a2a2a;
+			border-radius: 8px;
+			padding: 20px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+		}
+
+		.list-title {
+			font-size: 30px;
+			font-family: sans-serif;
+			font-weight: 400;
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.todo-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			background-color: #3a3a3a;
+			border-radius: 5px;
+			margin-bottom: 10px;
+			padding: 15px;
+			transition: all 0.3s ease;
+		}
+
+		.todo-item:hover {
+			cursor: pointer;
+			background-color: #4a4a4a;
+			transition: all 0.3s ease;
+		}
+
+		.todo-content {
+			flex-grow: 1;
+		}
+
+		.task-title {
+			margin-bottom: 5px;
+			font-weight: 300;
+		}
+
+		.info {
+			font-size: 0.9em;
+			margin-top: 5px;
+			color: #c0c0c0;
+		}
+
+		.label {
+			font-weight: 500;
+		}
+
+		.completed h2 {
+			text-decoration: line-through;
+			color: #7a7a7a;
+		}
+
+		.delete-btn {
+			background: none;
+			padding: 5px;
+			border: none;
+			color: #ffffff;
+			cursor: pointer;
+			font-size: 1.5em;
+			transition: color 0.3s;
+		}
+
+		.delete-btn:hover {
+			color: #ff4d4d;
+		}
+
+
+		#task-form {
+			display: flex;
+			flex-direction: column;
+			margin-bottom: 20px;
+		}		
+
+		#task-form input {
+			margin-bottom: 10px;
+			padding: 10px;
+			border-radius: 5px;
+			border: 1px solid #555;
+			color: #ffffff;
+			background-color: #3a3a3a;
+		}
+
+		#task-form input::placeholder {
+			position: absolute;
+			top: 10px;
+			left: 5px;
+
+		}
+
+		#task-description {
+			height: 50px;
+		}
+
+
+		#task-form input:focus {
+			outline: none;
+			border-color: #777;
+		}
+
+		#task-form #submit-task-btn {
+			cursor: pointer;
+			background-color: #5c5c5c;
+			transition: all 0.3s ease;
+			font-size: 15px;
+		}
+
+		#task-form #submit-task-btn:hover {
+			background-color: #4a4a4a;
+			transition: all 0.3s ease;
+		}
+
+	</style>
+
+</head>
+
+<body>
+	<div class="navbar">
+
+		{% if is_authorized %}
+			<div><a href="/login">Logout</a></div>
+		{% endif %}
+        <div><a href="/register">Register</a></div>
+        <div><a href="/login">Login</a></div>
+		<div><a href="/logout">Log out</a></div>
+    </div>
+
+	<div class="body-container">
+
+		<div class="container">
+			<form  onsubmit="addTask(event)">
+				<input type="text" id="task-name" placeholder="Task Name" required>
+				<input type="date" id="task-deadline">
+				<input id="task-description" placeholder="Description" rows="2">
+            <button type="submit">Add Task</button>
+        </form>
+		</div>
+		<div class="container">
+
+			<form method="POST" id="task-form" action="/tasks">
+                {{ form.hidden_tag() }}
+
+                {{ form.title(placeholder="Title") }}
+                {% for error in form.title.errors %}
+                    <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+                {% endfor %}
+
+                {{ form.description(placeholder="Description") }}
+                {% for error in form.description.errors %}
+                    <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+                {% endfor %}
+
+				{{ form.deadline }}
+                {% for error in form.deadline.errors %}
+                    <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+                {% endfor %}
+
+
+                <input type="submit" value="Add Task">
+            </form>
+		</div>
+
+
+		<div class="container">
+
+			<h1 class="list-title">To-Do List</h1>
+			<div class="todo-item" onclick="toggleCompleted(this)">
+
+				<div class="todo-content">
+					<h2 class="task-title">Watch the stars</h2>
+					<p class="info"><span class="label">Deadline:</span> 12th November 2024</p>
+					<p class="info"><span class="label">Description:</span> go to the trip</p>
+				</div>
+
+				<button class="delete-btn" onclick="deleteTodo(event)">🗑️</button>
+			</div>
+			
+			<div class="todo-item completed" onclick="toggleCompleted(this)">
+				<div class="todo-content">
+					<h2 class="task-title">Travel to Asia</h2>
+					<p class="info"><span class="label">Deadline:</span> 19th January 2025</p>
+				</div>
+				<button class="delete-btn" onclick="deleteTodo(event)">✕</button>
+			</div>
+	
+			<div class="todo-item" onclick="toggleCompleted(this)">
+				<div class="todo-content">
+					<h2 class="task-title">Wash the dishes</h2>
+				</div>
+				<button class="delete-btn" onclick="deleteTodo(event)">✕</button>
+			</div>
+		</div>
+	
+	</div>
+
+	<script>
+
+		function toggleCompleted(todoItem) {
+			todoItem.classList.toggle('completed');
+		}
+
+		function deleteTodo(event) {
+			event.stopPropagation();  // Prevent toggling of completed state
+			const todoItem = event.target.closest('.todo-item');
+			todoItem.remove();
+		}
+
+		async function addTask(event) {
+			
+			event.preventDefault();
+
+			const task_title = document.getElementById('task-title').value;
+			const task_deadline = document.getElementById('task-deadline').value;
+			const task_description = document.getElementById('task-description').value;
+			
+			console.log(task_title)
+			console.log(task_deadline)
+			console.log(task_description)
+
+			const add_task_data = {
+				title: task_title,
+				deadline: task_deadline,
+				description: task_description,
+			};
+
+			console.log(add_task_data)
+
+			try {
+				const response = await fetch('http://localhost:5001/create', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(add_task_data),
+				});
+
+				if (response.ok) {
+					const result = await response.json();
+					console.log('Task created successfully:', result);
+				} else {
+					const error_result = await response.json();
+					console.error('Error creating task:', error_result.message);
+				}
+
+			} catch (error) {
+				console.error('Error during fetch:', error);
+			}
+		}
+
+	</script>
+	
+
+    {% block content %}
+    {% endblock %}
+
+
+
+
+</body>
+
+</html>

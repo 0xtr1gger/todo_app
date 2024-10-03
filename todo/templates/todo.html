@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width", initial-scale="1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	<title>title</title>
+	<link rel="stylesheet" href="../static/todo.css">
+
+</head>
+
+<body>
+	<div class="container">
+
+	
+		<div class="add-task-container">
+
+			<!--<div class="header">
+				I haven't come up with a good name yet. 
+			</div>-->
+
+
+			<div class="add-task-form-container">	
+				<form action="/">
+					<input type="text" name="todo_text" placeholder="To do..." value="{{ request.form['todo_text'] }}">
+					<input id="to-do-submit" type="submit" value="Do it!">
+				<form>
+
+			</div>
+
+			<style>
+				.add-task-form-container {
+					background-image: url("{{ image_path }}"); /* url('https://picsum.photos/1200'); */
+        			background-size: cover;
+        			background-repeat: no-repeat;
+				}
+				
+			</style>
+
+		</div>	
+
+		<div class="tasks">
+
+			<div class="tasks-header">
+				<h1>To Do:</h1>
+			</div>	
+			<div class="to-do-list">
+				<ul>
+					<li>Watch the stars</li>
+					<li>Travel to Asia</li>
+					<li>Wash the dishes</li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+
+
+
+
+</body>
+
+</html>

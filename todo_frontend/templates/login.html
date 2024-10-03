@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Login{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <div><a href="/">TaskTrek</a></div>
+        <div><a href="/register">Register</a></div>
+        <div><a href="/login">Login</a></div>
+		<div><a href="#">Log out</a></div>
+    </div>
+
+    <div class="body-container">
+        <div class="container">
+            {% block auth_form %}
+            <h1 class="auth-title">Log in</h1>
+            
+            <form method="POST" action="/login">
+                {{ form.hidden_tag() }}
+
+                {{ form.email(placeholder="Email address") }}
+                {% for error in form.email.errors %}
+                    <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+                {% endfor %}
+
+                {{ form.password(placeholder="Password") }}
+                {% for error in form.password.errors %}
+                    <span style="color: rgb(236, 0, 0);">{{ error }}</span>
+                {% endfor %}
+
+                <input type="submit" value="Login">
+            </form>
+
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+            {% endblock %}
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <span style="color: rgb(160, 255, 160)" class="messages">{{ message }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>    
+    </div>
+
+    <!--{% block script %}
+    <script>
+    async function get_csrf_token() {
+        const response = await fetch('http://localhost:5001/api/auth/csrf');
+        const data = await response.json();
+        return data.token;
+    }
+
+    get_csrf_token().then(csrf_token => {
+        document.getElementById('csrt_token').value = csrf_token;
+    })
+
+    async function send_login_form(event) {
+			
+        event.preventDefault();
+
+        const user_email = document.getElementById('login-email').value;
+        const user_password = document.getElementById('login-password').value;
+        
+        console.log(user_email);
+        console.log(user_password);
+
+        const login_data = {
+            email: user_email,
+            password: user_password
+        };
+
+        console.log(login_data);
+
+        try {
+            const response = await fetch('http://localhost:5001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(login_data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                document.getElementById('messages').innerText = 'Login successful!'
+            } else {;
+                error_messages = [];
+                for (const [field, messages] of Object.entries(result.errors)) {
+                    messages.forEach(msg => {
+                        error_messages.push(`${msg}`);
+                    });
+                }
+                /*const errors = JSON.stringify(result.errors);*/
+
+
+
+                document.getElementById('messages').innerText = 'Registration failed:\n' + error_messages.join(', ');
+            }
+
+        } catch (error) {
+            console.error('Error during fetch:', error);
+        }
+    }
+
+    </script>
+    {% endblock %}-->
+
+</body>
+</html>

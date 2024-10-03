@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal To-Do List</title>
+    
+    <!--<style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background-color: #292929;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        #todo-list {
+            list-style-type: none;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            transition: background-color 0.3s;
+        }
+
+        .todo-item:hover {
+            background-color: #383838;
+        }
+
+        .todo-item.completed .task-name {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .task-name, .task-deadline, .task-description {
+            flex-grow: 1;
+        }
+
+        .delete-btn {
+            background-color: #c62a2a;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #a00;
+        }        
+
+
+    </style>-->
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background-color: #3a3a3a;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .todo-item:hover {
+            background-color: #4a4a4a;
+        }
+
+        .todo-content {
+            flex-grow: 1;
+        }
+
+        h2 {
+            margin-bottom: 5px;
+        }
+
+        .info {
+            font-size: 0.9em;
+            margin-top: 5px;
+            color: #c0c0c0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .completed h2 {
+            text-decoration: line-through;
+            color: #7a7a7a;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: color 0.3s;
+        }
+
+        .delete-btn:hover {
+            color: #ff4d4d;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <div class="todo-item" onclick="toggleCompleted(this)">
+            <div class="todo-content">
+                <h2>Watch the stars</h2>
+                <p class="info"><span class="label">Deadline:</span> 12th November 2024</p>
+                <p class="info"><span class="label">Description:</span> go to the trip</p>
+            </div>
+            <button class="delete-btn" onclick="deleteTodo(event)">🗑️</button>
+        </div>
+        
+        <div class="todo-item completed" onclick="toggleCompleted(this)">
+            <div class="todo-content">
+                <h2>Travel to Asia</h2>
+                <p class="info"><span class="label">Deadline:</span> 19th January 2025</p>
+            </div>
+            <button class="delete-btn" onclick="deleteTodo(event)">🗑️</button>
+        </div>
+
+        <div class="todo-item" onclick="toggleCompleted(this)">
+            <div class="todo-content">
+                <h2>Wash the dishes</h2>
+            </div>
+            <button class="delete-btn" onclick="deleteTodo(event)">🗑️</button>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        function toggleCompleted(todoItem) {
+            todoItem.classList.toggle('completed');
+        }
+
+        function deleteTodo(event) {
+            event.stopPropagation();  // Prevent toggling of completed state
+            const todoItem = event.target.closest('.todo-item');
+            todoItem.remove();
+}
+    </script>
+    <!--    <ul id="todo-list">
+            <li class="todo-item" data-completed="false">
+                <span class="task-name">watch the stars</span>
+                <span class="task-deadline">12th November 2024</span>
+                <span class="task-description">go to the trip</span>
+                <button class="delete-btn">Delete</button>
+            </li>
+            <li class="todo-item completed" data-completed="true">
+                <span class="task-name">travel to Asia</span>
+                <span class="task-deadline">19th January 2025</span>
+                <button class="delete-btn">Delete</button>
+            </li>
+            <li class="todo-item" data-completed="false">
+                <span class="task-name">wash the dishes</span>
+                <button class="delete-btn">Delete</button>
+            </li>
+        </ul>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const todoItems = document.querySelectorAll('.todo-item');
+    todoItems.forEach(item => {
+        const taskName = item.querySelector('.task-name');
+        const deleteBtn = item.querySelector('.delete-btn');
+
+        // Toggle completion status when the task name is clicked
+        taskName.addEventListener('click', () => {
+            const isCompleted = item.getAttribute('data-completed') === 'true';
+            item.setAttribute('data-completed', !isCompleted);
+            item.classList.toggle('completed');
+        });
+
+        // Handle the delete action
+        deleteBtn.addEventListener('click', () => {
+            item.remove();
+        });
+    });
+});
+
+
+
+    </script>
+
+
+-->    
+
+
+</body>
+</html>
