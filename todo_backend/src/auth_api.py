@@ -2,6 +2,7 @@ import flask
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import generate_password_hash, check_password_hash
 import datetime
+import time
 import jwt
 
 from .models import User, JWTBlacklist
@@ -88,15 +89,6 @@ def fetch_user_id():
     fetched_user = db.session.query(User).filter_by(user_id=user_id).first()
     return {'fetched_user_id': fetched_user.id}, 201
 
-@auth_blueprint.route('/verify_jwt', methods=['POST'])
-def verify_jwt():
-    access_token = request.get_json().get('JWT')
-    user_id = decode_jwt(access_token)
-    # if the function returns a string, this means an error has occurred
-    if isinstance(user_id, str):
-        return {'message': 'Invalid authentication token.'}, 403
-    else:
-        return {'user_id': user_id}, 201
 
 def generate_jwt(user_id):
     """
@@ -107,10 +99,10 @@ def generate_jwt(user_id):
         payload = {
             # subject
             'sub':user_id,
-            # expire
-            'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=0, minutes=30),
+            # expire: accepts UTC UNIX timestamps
+            'exp': int(time.time()), # datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=0, minutes=30),
             # issued at
-            'iat': datetime.datetime.now(datetime.UTC)
+            'iat': int(time.time()) + 60*5 # datetime.datetime.now(datetime.UTC)
         }
         print(payload)
         return jwt.encode(
@@ -121,6 +113,7 @@ def generate_jwt(user_id):
     except Exception as e:
         return f'Error: {e}'
 
+
 def decode_jwt(access_token):
     """
     Decode a JWT and return a user ID if the token has not expired
@@ -128,13 +121,28 @@ def decode_jwt(access_token):
     :return: integer|string
     """
     try:
-        payload = jwt.decode(access_token, SECRET_KEY)
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=['HS256'])
         print(payload)
         return payload['sub']
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError as err:
+        print(f'Unable to decode the token: {err}')
         return 'Session has expired. Please, log in again.'
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as err:
+        print(f'Unable to decode the token: {err}')
+        print(payload)
         return 'Invalid authentication token. Please, log in again.'
+
+
+@auth_blueprint.route('/verify_jwt', methods=['POST'])
+def verify_jwt():
+    access_token = request.get_json().get('access_token')
+    user_id = decode_jwt(access_token)
+    # if the function returns a string, this means an error has occurred
+    if isinstance(user_id, str):
+        return {'message': 'Invalid authentication token.'}, 403
+    else:
+        return {'user_id': user_id}, 201
+
 
 
 @auth_blueprint.route('/invalidate_jwt', methods=['POST'])
@@ -142,8 +150,8 @@ def invalidate_jwt():
     # invalidating the JWT by storing it in the JWT blacklist
     access_token = request.get_json().get('access_token')
     print(access_token)
-    sub = decode_jwt(access_token)
     try:
+        sub = decode_jwt(access_token)
         if isinstance(sub, str):
             print(sub)
             return {'message': 'Failed to decode the token.'}, 400

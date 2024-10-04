@@ -53,6 +53,17 @@ def check_if_authorized(request_object):
 @todo_view.route('/tasks', methods=['GET', 'POST'])
 def home():
     task_form = TaskForm()
+
+    # trying to get the JWT
+    access_token = request.cookies.get('sessionid')
+    print('access_token')
+    resp = requests.post('http://localhost:5001/api/auth/verify_jwt', json={'access_token': access_token})
+
+    if resp.ok:
+        print(resp)
+    else:
+        print('Error during token verification.')
+
     # the add_task form is submitted
     if request.method == 'POST':
         if task_form.validate_on_submit():
