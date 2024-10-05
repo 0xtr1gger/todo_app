@@ -95,15 +95,21 @@ def generate_jwt(user_id):
     Generates authentication token
     :return: string (JWT)
     """
+    expires_after = 24 * 60 * 60 # 1 day
     try:
         payload = {
             # subject
             'sub':user_id,
+
+            # issued at: accepts UTC UNIX timestamps
+            'iat': int(time.time()),  # current time
+            # 'iat': datetime.datetime.now(datetime.UTC)
+
             # expire: accepts UTC UNIX timestamps
-            'exp': int(time.time()), # datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=0, minutes=30),
-            # issued at
-            'iat': int(time.time()) + 60*5 # datetime.datetime.now(datetime.UTC)
+            'exp': int(time.time()) + expires_after # 5 minutes
+            # datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=0, minutes=30),
         }
+
         print(payload)
         return jwt.encode(
             payload,
@@ -133,16 +139,15 @@ def decode_jwt(access_token):
         return 'Invalid authentication token. Please, log in again.'
 
 
-@auth_blueprint.route('/verify_jwt', methods=['POST'])
-def verify_jwt():
-    access_token = request.get_json().get('access_token')
+#@auth_blueprint.route('/verify_jwt', methods=['POST'])
+def verify_jwt(access_token):
+    #access_token = request.get_json().get('access_token')
     user_id = decode_jwt(access_token)
     # if the function returns a string, this means an error has occurred
     if isinstance(user_id, str):
-        return {'message': 'Invalid authentication token.'}, 403
+        return 'Invalid authentication token.' # {'message': 'Invalid authentication token.'}, 403
     else:
-        return {'user_id': user_id}, 201
-
+        return user_id # {'user_id': user_id}, 201
 
 
 @auth_blueprint.route('/invalidate_jwt', methods=['POST'])

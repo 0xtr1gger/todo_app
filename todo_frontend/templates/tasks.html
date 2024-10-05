@@ -15,7 +15,7 @@ color palettes:
 	<meta name="viewport" content="width=device-width" initial-scale="1.0" shrink-to-fit="no">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	
-	<!--<link ref="stylesheet" type="text/css" href="../static/base.css">-->
+	<!--<link ref="stylesheet" type="text/css" href="../static/tasks.css">-->
 	<link ref="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
 
 	<style>
@@ -84,6 +84,10 @@ color palettes:
 			border-radius: 8px;
 			padding: 20px;
 			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+		}
+
+		.tasks-container {
+			overflow-y: scroll;
 		}
 
 		.list-title {
@@ -211,14 +215,14 @@ color palettes:
 
 	<div class="body-container">
 
-		<div class="container">
+		<!--<div class="container">
 			<form  onsubmit="addTask(event)">
 				<input type="text" id="task-name" placeholder="Task Name" required>
 				<input type="date" id="task-deadline">
 				<input id="task-description" placeholder="Description" rows="2">
-            <button type="submit">Add Task</button>
-        </form>
-		</div>
+            	<button type="submit">Add Task</button>
+        	</form>
+		</div>-->
 		<div class="container">
 
 			<form method="POST" id="task-form" action="/tasks">
@@ -242,10 +246,18 @@ color palettes:
 
                 <input type="submit" value="Add Task">
             </form>
+
+			{% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <span style="color: rgb(160, 255, 160)" class="messages">{{ message }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 		</div>
 
 
-		<div class="container">
+		<div class="container tasks-container">
 
 			<h1 class="list-title">To-Do List</h1>
 			<div class="todo-item" onclick="toggleCompleted(this)">
@@ -259,6 +271,20 @@ color palettes:
 				<button class="delete-btn" onclick="deleteTodo(event)">🗑️</button>
 			</div>
 			
+			{% if tasks %}
+				{% for task in tasks %}
+				<div class="todo-item {{ 'completed' if task.completed else '' }}" onclick="toggleCompleted(this)">
+					<div class="todo-content">
+						<h2 class="task-title">
+							{{ task.title }}
+						</h2>
+						<p class="info"><span class="label">Deadline:</span> {{ task.deadline or 'No deadline' }}</p>
+					</div>
+					<button class="delete-btn" data-task-id="{{ task.id }}" onclick="deleteTodo(event)">✕</button>
+				</div>
+				{% endfor %}
+			{% endif %}
+
 			<div class="todo-item completed" onclick="toggleCompleted(this)">
 				<div class="todo-content">
 					<h2 class="task-title">Travel to Asia</h2>
@@ -266,7 +292,8 @@ color palettes:
 				</div>
 				<button class="delete-btn" onclick="deleteTodo(event)">✕</button>
 			</div>
-	
+
+
 			<div class="todo-item" onclick="toggleCompleted(this)">
 				<div class="todo-content">
 					<h2 class="task-title">Wash the dishes</h2>
@@ -287,6 +314,27 @@ color palettes:
 			event.stopPropagation();  // Prevent toggling of completed state
 			const todoItem = event.target.closest('.todo-item');
 			todoItem.remove();
+
+			/*
+			const taskId = todoItem.getAttribute('data-task-id');
+			fetch(`https://localhost:5000/delete_task/${taskId}`, {
+				method: 'DELETE'
+			})
+			.then(response => {
+				if (response.ok) {
+					// Successfully deleted, remove the item from the DOM
+					todoItem.remove();
+				} else {
+					// Handle errors here (e.g., show a message)
+					console.error('Error deleting task:', response.statusText);
+				}
+			})
+			.catch(error => {
+				console.error('Fetch error:', error);
+			});
+			*/
+
+
 		}
 
 		async function addTask(event) {

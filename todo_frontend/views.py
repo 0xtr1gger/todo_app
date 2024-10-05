@@ -49,39 +49,67 @@ def check_if_authorized(request_object):
         print(f'Error: {e}')
         return json.dumps({'message': f'Error: {e}'})
 
-@todo_view.route('/', methods=['GET', 'POST'])
+
+
+@todo_view.route('/', methods=['GET'])
 @todo_view.route('/tasks', methods=['GET', 'POST'])
 def home():
     task_form = TaskForm()
-
-    # trying to get the JWT
+    # get the JWT
     access_token = request.cookies.get('sessionid')
-    print('access_token')
-    resp = requests.post('http://localhost:5001/api/auth/verify_jwt', json={'access_token': access_token})
+    print(access_token)
+    # if not authorized, redirect to the /login page
+    if not access_token:
+        return redirect('/login')
 
-    if resp.ok:
-        print(resp)
-    else:
-        print('Error during token verification.')
+    tasks_response = requests.get('http://localhost:5001/api/tasks/get_tasks', json={'access_token': access_token})
+
+    if tasks_response.ok:
+        tasks = tasks_response.json()
+        print(tasks)
+        return render_template(
+            'tasks.html',
+            form=task_form,
+            tasks=tasks
+        )
 
     # the add_task form is submitted
     if request.method == 'POST':
         if task_form.validate_on_submit():
-            task_data = {
+
+            # obtain task data form the form sent by the user
+            form_data = {
                 'title': task_form.title.data
             }
             description = task_form.description.data
             if description:
-                task_data['description'] = description
+                form_data['description'] = description
             deadline = task_form.deadline.data
             if deadline:
-                task_data['deadline'] = deadline
-            print(task_data)
+                form_data['deadline'] = json.dumps(deadline.isoformat())
+            print(form_data)
+
+            # append the JWT for validation and to extract the User ID
+            form_data['access_token'] = access_token
+
+            add_task_api_response = requests.post('http://localhost:5001/api/tasks/add_task', json=form_data)
+            if add_task_api_response.ok:
+                print('Task created successfully.')
+                flash('Task created successfully!')
+                redirect('/')
+            else:
+                print(add_task_api_response.json().get('message'))
+                flash('Error creating a task.')
 
     return render_template(
         'tasks.html',
         form=task_form
     )
+
+@todo_view.route('/delete_task/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+
+    pass
 
 """context = {}
 result = json.loads(check_if_authorized(request))
