@@ -5,7 +5,7 @@ from flask import Blueprint, request, flash, render_template, redirect, jsonify
 import requests
 import json
 
-from forms import RegistrationForm, LoginForm, TaskForm
+from forms import RegistrationForm, LoginForm, TaskForm, DeleteTaskForm
 
 import base64
 
@@ -55,6 +55,8 @@ def check_if_authorized(request_object):
 @todo_view.route('/tasks', methods=['GET', 'POST'])
 def home():
     task_form = TaskForm()
+    delete_task_form = DeleteTaskForm()
+
     # get the JWT
     access_token = request.cookies.get('sessionid')
     print(access_token)
@@ -70,6 +72,7 @@ def home():
         return render_template(
             'tasks.html',
             form=task_form,
+            delete_form=delete_task_form,
             tasks=tasks
         )
 
@@ -103,13 +106,23 @@ def home():
 
     return render_template(
         'tasks.html',
-        form=task_form
+        form=task_form,
+        delete_form=delete_task_form
     )
 
-@todo_view.route('/delete_task/<int:task_id>', methods=['DELETE'])
+@todo_view.route('/delete_task', methods=['POST'])
 def delete_task(task_id):
+    delete_task_form = DeleteTaskForm()
+    if request.method == 'POST':
+        if delete_task_form.validate_on_submit():
+            task_id = delete_task_form.task_id.data
+            print(task_id)
+        else:
+            flash("Failed to delete the task.")
+            redirect('/')
+    else:
+        return redirect('/')
 
-    pass
 
 """context = {}
 result = json.loads(check_if_authorized(request))

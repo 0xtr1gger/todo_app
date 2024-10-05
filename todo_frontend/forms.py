@@ -2,7 +2,7 @@ import xmlrpc.client
 
 import wtforms.validators
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField, DateField
+from wtforms.fields import StringField, PasswordField, DateField, IntegerField
 from wtforms.validators import InputRequired, EqualTo, Email, ValidationError, Optional
 
 import re
@@ -86,3 +86,8 @@ class TaskForm(FlaskForm):
     ])
     description = StringField('Description')
     deadline = DateField('Deadline', format='%Y-%m-%d', validators=[Optional()])
+
+class DeleteTaskForm(FlaskForm):
+    task_id = IntegerField('Task ID', validators=[
+        InputRequired()
+    ])

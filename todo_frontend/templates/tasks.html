@@ -198,6 +198,9 @@ color palettes:
 			transition: all 0.3s ease;
 		}
 
+		.hidden {
+			display: none;
+		}
 	</style>
 
 </head>
@@ -280,7 +283,13 @@ color palettes:
 						</h2>
 						<p class="info"><span class="label">Deadline:</span> {{ task.deadline or 'No deadline' }}</p>
 					</div>
-					<button class="delete-btn" data-task-id="{{ task.id }}" onclick="deleteTodo(event)">✕</button>
+					<!--<button class="delete-btn" data-task-id="{{ task.id }}" onclick="deleteTodo(event)"></button>-->
+					<form action="/delete_task" method="POST" id="delete-task-form" class="delete-form">
+						{{ delete_form.hidden_tag() }}
+						{{ delete_form.task_id(class='hidden', value=task.id) }}
+						<!--<input class="delete-btn" type="submit" value="✕">-->
+						<button class="delete-btn" form="delete-task-form">✕</button>
+					</form>
 				</div>
 				{% endfor %}
 			{% endif %}
@@ -290,7 +299,7 @@ color palettes:
 					<h2 class="task-title">Travel to Asia</h2>
 					<p class="info"><span class="label">Deadline:</span> 19th January 2025</p>
 				</div>
-				<button class="delete-btn" onclick="deleteTodo(event)">✕</button>
+				<button class="delete-btn">✕</button>
 			</div>
 
 
@@ -298,7 +307,7 @@ color palettes:
 				<div class="todo-content">
 					<h2 class="task-title">Wash the dishes</h2>
 				</div>
-				<button class="delete-btn" onclick="deleteTodo(event)">✕</button>
+				<button class="delete-btn">✕</button>
 			</div>
 		</div>
 	
@@ -310,7 +319,7 @@ color palettes:
 			todoItem.classList.toggle('completed');
 		}
 
-		function deleteTodo(event) {
+		/*function deleteTodo(event) {
 			event.stopPropagation();  // Prevent toggling of completed state
 			const todoItem = event.target.closest('.todo-item');
 			todoItem.remove();
@@ -332,7 +341,7 @@ color palettes:
 			.catch(error => {
 				console.error('Fetch error:', error);
 			});
-			*/
+		*/
 
 
 		}
